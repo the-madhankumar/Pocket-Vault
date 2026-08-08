@@ -4,209 +4,119 @@
     "platform": "Google",
     "userid": "madhan123",
     "mail": "madhan@gmail.com",
-    "password": "G00gle@123"
+    "password": "G00gle@123",
+    "link": "https://accounts.google.com"
   },
   {
     "id": 2,
     "platform": "GitHub",
     "userid": "madhan_dev",
     "mail": "madhan.dev@gmail.com",
-    "password": "GitHub#2026"
+    "password": "GitHub#2026",
+    "link": "https://github.com/login"
   },
   {
     "id": 3,
     "platform": "Netflix",
     "userid": "madhan.netflix",
     "mail": "madhan@gmail.com",
-    "password": "Netflix@456"
+    "password": "Netflix@456",
+    "link": "https://www.netflix.com/login"
   },
   {
     "id": 4,
     "platform": "Instagram",
     "userid": "madhan_ig",
     "mail": "madhan@gmail.com",
-    "password": "Insta@789"
+    "password": "Insta@789",
+    "link": "https://www.instagram.com/accounts/login/"
   },
   {
     "id": 5,
     "platform": "Amazon",
     "userid": "madhan.shop",
     "mail": "madhan.shop@gmail.com",
-    "password": "Amazon#987"
+    "password": "Amazon#987",
+    "link": "https://www.amazon.com/ap/signin"
   },
   {
     "id": 6,
     "platform": "Facebook",
     "userid": "madhan.fb",
     "mail": "madhan@gmail.com",
-    "password": "FB@Secure123"
+    "password": "FB@Secure123",
+    "link": "https://www.facebook.com/login"
   },
   {
     "id": 7,
     "platform": "LinkedIn",
     "userid": "madhan.work",
     "mail": "madhan.work@gmail.com",
-    "password": "LinkedIn@2026"
+    "password": "LinkedIn@2026",
+    "link": "https://www.linkedin.com/login"
   },
   {
     "id": 8,
     "platform": "Spotify",
     "userid": "madhan.music",
     "mail": "madhan@gmail.com",
-    "password": "Spotify#321"
+    "password": "Spotify#321",
+    "link": "https://accounts.spotify.com/login"
   },
   {
     "id": 9,
     "platform": "Microsoft",
     "userid": "madhan_ms",
     "mail": "madhan@gmail.com",
-    "password": "Microsoft@2026"
+    "password": "Microsoft@2026",
+    "link": "https://login.live.com"
   },
   {
     "id": 10,
     "platform": "Apple",
     "userid": "madhan_ios",
     "mail": "madhan.apple@gmail.com",
-    "password": "Apple#456"
+    "password": "Apple#456",
+    "link": "https://appleid.apple.com"
   },
   {
     "id": 11,
     "platform": "X",
     "userid": "madhan_x",
     "mail": "madhan@gmail.com",
-    "password": "Twitter@789"
+    "password": "Twitter@789",
+    "link": "https://x.com/login"
   },
   {
     "id": 12,
     "platform": "Reddit",
     "userid": "madhan_reddit",
     "mail": "madhan@gmail.com",
-    "password": "Reddit@123"
+    "password": "Reddit@123",
+    "link": "https://www.reddit.com/login"
   },
   {
     "id": 13,
     "platform": "Discord",
     "userid": "madhan_discord",
     "mail": "madhan.chat@gmail.com",
-    "password": "Discord#2026"
+    "password": "Discord#2026",
+    "link": "https://discord.com/login"
   },
   {
     "id": 14,
     "platform": "Telegram",
     "userid": "madhan_telegram",
     "mail": "madhan@gmail.com",
-    "password": "Telegram@321"
+    "password": "Telegram@321",
+    "link": "https://web.telegram.org"
   },
   {
     "id": 15,
     "platform": "WhatsApp",
     "userid": "madhan_whatsapp",
     "mail": "madhan@gmail.com",
-    "password": "WhatsApp@456"
-  },
-  {
-    "id": 16,
-    "platform": "Snapchat",
-    "userid": "madhan_snap",
-    "mail": "madhan.snap@gmail.com",
-    "password": "Snap@2026"
-  },
-  {
-    "id": 17,
-    "platform": "Pinterest",
-    "userid": "madhan_pin",
-    "mail": "madhan@gmail.com",
-    "password": "Pinterest#789"
-  },
-  {
-    "id": 18,
-    "platform": "PayPal",
-    "userid": "madhan_pay",
-    "mail": "madhan.pay@gmail.com",
-    "password": "PayPal@654"
-  },
-  {
-    "id": 19,
-    "platform": "Dropbox",
-    "userid": "madhan_cloud",
-    "mail": "madhan@gmail.com",
-    "password": "Dropbox#111"
-  },
-  {
-    "id": 20,
-    "platform": "Adobe",
-    "userid": "madhan_adobe",
-    "mail": "madhan.design@gmail.com",
-    "password": "Adobe@2026"
-  },
-  {
-    "id": 21,
-    "platform": "Canva",
-    "userid": "madhan_canva",
-    "mail": "madhan@gmail.com",
-    "password": "Canva#123"
-  },
-  {
-    "id": 22,
-    "platform": "Notion",
-    "userid": "madhan_notes",
-    "mail": "madhan@gmail.com",
-    "password": "Notion@456"
-  },
-  {
-    "id": 23,
-    "platform": "Slack",
-    "userid": "madhan_slack",
-    "mail": "madhan.work@gmail.com",
-    "password": "Slack#2026"
-  },
-  {
-    "id": 24,
-    "platform": "Zoom",
-    "userid": "madhan_zoom",
-    "mail": "madhan@gmail.com",
-    "password": "Zoom@789"
-  },
-  {
-    "id": 25,
-    "platform": "Steam",
-    "userid": "madhan_gamer",
-    "mail": "madhan.games@gmail.com",
-    "password": "Steam#999"
-  },
-  {
-    "id": 26,
-    "platform": "Epic Games",
-    "userid": "madhan_epic",
-    "mail": "madhan.games@gmail.com",
-    "password": "Epic@456"
-  },
-  {
-    "id": 27,
-    "platform": "Spotify Family",
-    "userid": "madhan_music",
-    "mail": "madhan.music@gmail.com",
-    "password": "Music#321"
-  },
-  {
-    "id": 28,
-    "platform": "Medium",
-    "userid": "madhan_writer",
-    "mail": "madhan.blog@gmail.com",
-    "password": "Medium@2026"
-  },
-  {
-    "id": 29,
-    "platform": "Coursera",
-    "userid": "madhan_learn",
-    "mail": "madhan.study@gmail.com",
-    "password": "Course#2026"
-  },
-  {
-    "id": 30,
-    "platform": "Udemy",
-    "userid": "madhan_udemy",
-    "mail": "madhan.study@gmail.com",
-    "password": "Udemy@123"
+    "password": "WhatsApp@456",
+    "link": "https://web.whatsapp.com"
   }
 ]
