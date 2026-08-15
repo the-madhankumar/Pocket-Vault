@@ -67,13 +67,26 @@ class _HomeState extends State<Home> {
                 return ListView.builder(
                   itemCount: passwords.length,
                   itemBuilder: (context, index) {
-                    return passwordCard(context: context, item: passwords[index]);
+                    return passwordCard(
+                      context: context,
+                      item: passwords[index],
+                    );
                   },
                 );
               },
             ),
           ),
         ],
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(right: 10, bottom: 80),
+        child: FloatingActionButton.extended(
+          onPressed: () {},
+          label: const Text("Add", style: TextStyle(color: Colors.white),),
+          icon: const Icon(Icons.add, color: Colors.white,),
+          backgroundColor: AppColors.search,
+        ),
       ),
     );
   }

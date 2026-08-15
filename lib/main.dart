@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_vault/Database/isar_setup.dart';
 import 'package:pocket_vault/Screens/bottom_nav.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeIsar();
   runApp(const MainApp());
 }
 
