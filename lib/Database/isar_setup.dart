@@ -1,6 +1,6 @@
 import 'package:isar_community/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pocket_vault/Database/password.model.dart';
+import 'package:pocket_vault/Database/Password/password.model.dart';
 
 late final Isar isar;
 

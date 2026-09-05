@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_vault/Screens/generator.dart';
 import 'package:pocket_vault/Screens/home.dart';
+import 'package:pocket_vault/Screens/settings.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
@@ -15,7 +16,7 @@ class _BottomNavState extends State<BottomNav> {
   final List<Widget> screens = const [
     Home(),
     Generator(),
-    Center(child: Text('Settings')),
+    Settings()
   ];
 
   @override

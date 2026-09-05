@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_vault/Data/test_model.dart';
+import 'package:pocket_vault/Database/Password/password.model.dart';
 import 'package:pocket_vault/Utils/app_colors.dart';
 
 Future<void> editDialog(
   BuildContext context, {
-  required PasswordModel data,
+  required Password data,
 }) {
   return showDialog(
     context: context,
@@ -47,7 +47,7 @@ Future<void> editDialog(
           children: [
 
             TextField(
-              controller: TextEditingController(text: data.mail),
+              controller: TextEditingController(text: data.email),
               decoration: const InputDecoration(
                 labelText: "Email",
                 prefixIcon: Icon(Icons.email, color: Colors.white,),

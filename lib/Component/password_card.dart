@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_vault/Data/test_model.dart';
+import 'package:pocket_vault/Database/Password/password.model.dart';
 import 'package:pocket_vault/Screens/Edit.dart';
 import 'package:pocket_vault/Screens/View.dart';
 
 Widget passwordCard({
   required BuildContext context,
-  required PasswordModel item,
+  required Password item,
+  required Future<void> Function(Password) deletePass,
 }) {
   return Container(
     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -13,7 +14,7 @@ Widget passwordCard({
     decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
     child: InkWell(
       borderRadius: BorderRadius.circular(16),
-      onTap: () => view(context, data: item),
+      onTap: () => view(context, data: item, deletePass: deletePass),
       child: Row(
         children: [
           Container(
@@ -58,7 +59,7 @@ Widget passwordCard({
                       const SizedBox(height: 4),
 
                       Text(
-                        item.mail,
+                        item.email,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
@@ -68,30 +69,6 @@ Widget passwordCard({
                       ),
                     ],
                   ),
-                ),
-
-                const SizedBox(width: 12),
-
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      onPressed: () {
-                        editDialog(context, data: item);
-                      },
-                      icon: const Icon(
-                        Icons.edit_outlined,
-                        color: Colors.white,
-                      ),
-                    ),
-
-                    IconButton(
-                      onPressed: () {
-                        // delete logic
-                      },
-                      icon: const Icon(Icons.delete_outline, color: Colors.red),
-                    ),
-                  ],
                 ),
               ],
             ),

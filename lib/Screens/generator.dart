@@ -1,5 +1,5 @@
-import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pocket_vault/Component/heading.dart';
 import 'package:pocket_vault/Utils/app_colors.dart';
 import 'package:pocket_vault/Utils/password_generator_service.dart';
@@ -12,296 +12,263 @@ class Generator extends StatefulWidget {
 }
 
 class _GeneratorState extends State<Generator> {
-  var rating = 8.0;
+  final TextEditingController _passwordController = TextEditingController();
 
-  bool upperCase = false;
-  bool lowerCase = false;
-  bool symbols = false;
-  bool numbers = false;
+  double _passwordLength = 12.0;
 
-  String generatedPassword = "";
+  bool _includeUppercase = true;
+  bool _includeLowercase = true;
+  bool _includeSymbols = true;
+  bool _includeNumbers = true;
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _generatePassword() {
+    final password = PasswordGeneratorService(
+      upperCase: _includeUppercase,
+      lowerCase: _includeLowercase,
+      symbols: _includeSymbols,
+      numbers: _includeNumbers,
+      length: _passwordLength.round(),
+      anyinput: _passwordController.text,
+    ).generate();
+
+    setState(() {
+      _passwordController.text = password;
+    });
+  }
+
+  void _copyToClipboard() {
+    if (_passwordController.text.isEmpty) return;
+
+    Clipboard.setData(ClipboardData(text: _passwordController.text));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        backgroundColor: Colors.white,
+        content: Text(
+          'Password copied to clipboard!',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  Widget _buildOptionTile({
+    required String title,
+    required bool value,
+    required ValueChanged<bool?> onChanged,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: CheckboxListTile(
+        title: Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        value: value,
+        onChanged: onChanged,
+        activeColor: Colors.white,
+        checkColor: Colors.black,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Column(
-        children: [
-          SizedBox(height: 20.0),
-          heading(text: "Password Generator"),
-          SizedBox(height: 20.0),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              heading(text: "Password Generator"),
+              const SizedBox(height: 24),
 
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.all(20.0),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.06),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title and value
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white10,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.white24),
+                ),
+                child: Row(
                   children: [
-                    const Text(
-                      'Password Length',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    const Icon(
+                      Icons.lock_outline_rounded,
+                      color: Colors.white70,
+                      size: 24,
                     ),
-
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '${rating.round()}',
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: TextField(
+                        controller: _passwordController,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 14,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                        ),
+                        decoration: const InputDecoration(
+                          hintText: 'Tap generate to create...',
+                          hintStyle: TextStyle(
+                            color: Colors.white38,
+                            fontSize: 15,
+                            fontWeight: FontWeight.normal,
+                            letterSpacing: 0,
+                          ),
+                          border: InputBorder.none,
                         ),
                       ),
                     ),
+                    IconButton(
+                      icon: const Icon(Icons.refresh_rounded, color: Colors.white),
+                      onPressed: _generatePassword,
+                      tooltip: 'Generate password',
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.copy_rounded, color: Colors.white70),
+                      onPressed: _copyToClipboard,
+                      tooltip: 'Copy password',
+                    ),
                   ],
                 ),
+              ),
 
-                const SizedBox(height: 12),
+              const SizedBox(height: 28),
 
-                Slider(
-                  value: rating,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Password Length',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white12,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: Colors.white30),
+                    ),
+                    child: Text(
+                      '${_passwordLength.round()}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  activeTrackColor: Colors.white,
+                  inactiveTrackColor: Colors.white12,
+                  thumbColor: Colors.white,
+                  overlayColor: Colors.white24,
+                ),
+                child: Slider(
+                  value: _passwordLength,
                   min: 8,
                   max: 32,
                   divisions: 24,
-                  label: '${rating.round()}',
                   onChanged: (value) {
                     setState(() {
-                      rating = value;
+                      _passwordLength = value;
                     });
                   },
                 ),
+              ),
 
-                const Row(
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '8',
-                      style: TextStyle(color: Colors.white54, fontSize: 12),
-                    ),
-                    Text(
-                      '32',
-                      style: TextStyle(color: Colors.white54, fontSize: 12),
-                    ),
+                    Text('8', style: TextStyle(color: Colors.white38, fontSize: 12)),
+                    Text('32', style: TextStyle(color: Colors.white38, fontSize: 12)),
                   ],
                 ),
-
-                const SizedBox(height: 22),
-
-                Row(
-                  children: [
-                    Checkbox(
-                      value: upperCase,
-                      onChanged: (value) {
-                        setState(() {
-                          upperCase = value ?? false;
-                        });
-                      },
-                    ),
-
-                    const Text(
-                      'Uppercase',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-
-                Row(
-                  children: [
-                    Checkbox(
-                      value: lowerCase,
-                      onChanged: (value) {
-                        setState(() {
-                          lowerCase = value ?? false;
-                        });
-                      },
-                    ),
-
-                    const Text(
-                      'LowerCase',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-
-                Row(
-                  children: [
-                    Checkbox(
-                      value: symbols,
-                      onChanged: (value) {
-                        setState(() {
-                          symbols = value ?? false;
-                        });
-                      },
-                    ),
-
-                    const Text(
-                      'Symbols',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-
-                Row(
-                  children: [
-                    Checkbox(
-                      value: numbers,
-                      onChanged: (value) {
-                        setState(() {
-                          numbers = value ?? false;
-                        });
-                      },
-                    ),
-
-                    const Text(
-                      'Numbers',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Generated Password',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 14,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.08),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.lock_outline,
-                            color: Colors.white54,
-                            size: 20,
-                          ),
-
-                          const SizedBox(width: 12),
-
-                          Expanded(
-                            child: Text(
-                              generatedPassword.isEmpty
-                                  ? 'Generate a password'
-                                  : generatedPassword,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: generatedPassword.isEmpty
-                                    ? Colors.white54
-                                    : Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                letterSpacing: generatedPassword.isEmpty
-                                    ? 0
-                                    : 1,
-                              ),
-                            ),
-                          ),
-
-                          if (generatedPassword.isNotEmpty)
-                            IconButton(
-                              onPressed: () async {
-                                try {
-                                  await FlutterClipboard.copy(
-                                    generatedPassword,
-                                  );
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Copied Successfully !'),
-                                    ),
-                                  );
-                                } on ClipboardException catch (e) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Error In Copying : $e'),
-                                    ),
-                                  );
-                                }
-                              },
-                              icon: const Icon(
-                                Icons.copy_outlined,
-                                color: Colors.white54,
-                                size: 19,
-                              ),
-                              tooltip: 'Copy password',
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            width: 150.0,
-            height: 50,
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  generatedPassword = PasswordGeneratorService(
-                    upperCase: upperCase,
-                    lowerCase: lowerCase,
-                    symbols: symbols,
-                    numbers: numbers,
-                    length: rating.round(),
-                  ).generate();
-                });
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueGrey,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                elevation: 0,
               ),
-              child: const Text(
-                'Generate',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+
+              const SizedBox(height: 24),
+
+              const Text(
+                'Include Settings',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            ),
+
+              const SizedBox(height: 12),
+
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: 2.5,
+                children: [
+                  _buildOptionTile(
+                    title: 'Uppercase',
+                    value: _includeUppercase,
+                    onChanged: (val) => setState(() => _includeUppercase = val ?? false),
+                  ),
+                  _buildOptionTile(
+                    title: 'Lowercase',
+                    value: _includeLowercase,
+                    onChanged: (val) => setState(() => _includeLowercase = val ?? false),
+                  ),
+                  _buildOptionTile(
+                    title: 'Numbers',
+                    value: _includeNumbers,
+                    onChanged: (val) => setState(() => _includeNumbers = val ?? false),
+                  ),
+                  _buildOptionTile(
+                    title: 'Symbols',
+                    value: _includeSymbols,
+                    onChanged: (val) => setState(() => _includeSymbols = val ?? false),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

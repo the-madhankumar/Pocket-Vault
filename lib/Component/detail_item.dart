@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:clipboard/clipboard.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DetailItem extends StatelessWidget {
   final String label;
@@ -47,7 +48,7 @@ class DetailItem extends StatelessWidget {
                       ),
 
                       const SizedBox(height: 4),
-                      
+
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Text(
@@ -67,25 +68,51 @@ class DetailItem extends StatelessWidget {
 
                 const SizedBox(width: 8),
 
-                IconButton(
-                  onPressed: () async {
-                    try {
-                      await FlutterClipboard.copy(value);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Copied Successfully !')),
-                      );
-                    } on ClipboardException catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Error In Copying : $e')),
-                      );
-                    }
-                  },
-                  icon: const Icon(
-                    Icons.copy_outlined,
-                    color: Colors.white54,
-                    size: 19,
+                if (label == 'URL')
+                  IconButton(
+                    onPressed: () async {
+                      try {
+                        String url = value.trim();
+
+                        if(!url.startsWith("https://") && !url.startsWith("http://")) {
+                          url = "https://$url";
+                        }
+                        await launchUrl(Uri.parse(url));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Opening in browser !')),
+                        );
+                      } on ClipboardException catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error In Copying : $e')),
+                        );
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.open_in_browser,
+                      color: Colors.white54,
+                      size: 19,
+                    ),
+                  )
+                else
+                  IconButton(
+                    onPressed: () async {
+                      try {
+                        await FlutterClipboard.copy(value);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Copied Successfully !')),
+                        );
+                      } on ClipboardException catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error In Copying : $e')),
+                        );
+                      }
+                    },
+                    icon: const Icon(
+                      Icons.copy_outlined,
+                      color: Colors.white54,
+                      size: 19,
+                    ),
                   ),
-                ),
               ],
             ),
           ),

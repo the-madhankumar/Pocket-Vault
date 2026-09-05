@@ -3,11 +3,13 @@
 import 'package:clipboard/clipboard.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_vault/Component/detail_item.dart';
-import 'package:pocket_vault/Data/test_model.dart';
+import 'package:pocket_vault/Database/Password/password.model.dart';
 import 'package:pocket_vault/Utils/app_colors.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-Future<void> view(BuildContext context, {required PasswordModel data}) {
-  bool open = false;
+Future<void> view(BuildContext context, {required Password data, required Future<void> Function(Password) deletePass,}) async {
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool open = prefs.getBool("hidePasswords")!;
 
   return showDialog(
     context: context,
@@ -58,7 +60,7 @@ Future<void> view(BuildContext context, {required PasswordModel data}) {
 
                   DetailItem(
                     label: 'Email',
-                    value: data.mail,
+                    value: data.email,
                     icon: Icons.email_outlined,
                   ),
 
@@ -106,7 +108,7 @@ Future<void> view(BuildContext context, {required PasswordModel data}) {
                               const SizedBox(height: 5),
 
                               Text(
-                                open ? data.password : '••••••••',
+                                open ? '••••••••': data.password,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: const TextStyle(
@@ -121,14 +123,14 @@ Future<void> view(BuildContext context, {required PasswordModel data}) {
                         ),
 
                         IconButton(
-                          tooltip: open ? 'Hide password' : 'Show password',
+                          tooltip: open ? 'Show password' : 'Hide password',
                           onPressed: () {
                             setState(() {
                               open = !open;
                             });
                           },
                           icon: Icon(
-                            open ? Icons.visibility : Icons.visibility_off,
+                            open ? Icons.visibility_off : Icons.visibility,
                             color: Colors.white70,
                             size: 20,
                           ),
@@ -176,6 +178,36 @@ Future<void> view(BuildContext context, {required PasswordModel data}) {
                         ),
                       ],
                     ),
+                  ),
+
+                  SizedBox(height: 20.0),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      IconButton.outlined(
+                        icon: Icon(Icons.edit, color: Colors.white),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 40.0,
+                        ),
+                        onPressed: () {},
+                      ),
+                      IconButton.outlined(
+                        icon: Icon(Icons.delete_forever, color: Colors.red),
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10.0,
+                          horizontal: 40.0,
+                        ),
+                        onPressed: () async {
+                          await deletePass(data);
+
+                          if (context.mounted) {
+                            Navigator.of(context).pop();
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ],
               ),
