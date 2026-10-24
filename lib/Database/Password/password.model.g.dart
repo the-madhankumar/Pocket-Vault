@@ -19,17 +19,27 @@ const PasswordSchema = CollectionSchema(
   properties: {
     r'email': PropertySchema(id: 0, name: r'email', type: IsarType.string),
     r'link': PropertySchema(id: 1, name: r'link', type: IsarType.string),
-    r'password': PropertySchema(
+    r'passwordCipherText': PropertySchema(
       id: 2,
-      name: r'password',
+      name: r'passwordCipherText',
+      type: IsarType.string,
+    ),
+    r'passwordMac': PropertySchema(
+      id: 3,
+      name: r'passwordMac',
+      type: IsarType.string,
+    ),
+    r'passwordNonce': PropertySchema(
+      id: 4,
+      name: r'passwordNonce',
       type: IsarType.string,
     ),
     r'platform': PropertySchema(
-      id: 3,
+      id: 5,
       name: r'platform',
       type: IsarType.string,
     ),
-    r'userId': PropertySchema(id: 4, name: r'userId', type: IsarType.string),
+    r'userId': PropertySchema(id: 6, name: r'userId', type: IsarType.string),
   },
 
   estimateSize: _passwordEstimateSize,
@@ -55,7 +65,9 @@ int _passwordEstimateSize(
   var bytesCount = offsets.last;
   bytesCount += 3 + object.email.length * 3;
   bytesCount += 3 + object.link.length * 3;
-  bytesCount += 3 + object.password.length * 3;
+  bytesCount += 3 + object.passwordCipherText.length * 3;
+  bytesCount += 3 + object.passwordMac.length * 3;
+  bytesCount += 3 + object.passwordNonce.length * 3;
   bytesCount += 3 + object.platform.length * 3;
   bytesCount += 3 + object.userId.length * 3;
   return bytesCount;
@@ -69,9 +81,11 @@ void _passwordSerialize(
 ) {
   writer.writeString(offsets[0], object.email);
   writer.writeString(offsets[1], object.link);
-  writer.writeString(offsets[2], object.password);
-  writer.writeString(offsets[3], object.platform);
-  writer.writeString(offsets[4], object.userId);
+  writer.writeString(offsets[2], object.passwordCipherText);
+  writer.writeString(offsets[3], object.passwordMac);
+  writer.writeString(offsets[4], object.passwordNonce);
+  writer.writeString(offsets[5], object.platform);
+  writer.writeString(offsets[6], object.userId);
 }
 
 Password _passwordDeserialize(
@@ -81,10 +95,12 @@ Password _passwordDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Password(
-    reader.readString(offsets[4]),
+    reader.readString(offsets[6]),
     reader.readString(offsets[0]),
     reader.readString(offsets[2]),
+    reader.readString(offsets[4]),
     reader.readString(offsets[3]),
+    reader.readString(offsets[5]),
     reader.readString(offsets[1]),
   );
   object.id = id;
@@ -107,6 +123,10 @@ P _passwordDeserializeProp<P>(
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
+      return (reader.readString(offset)) as P;
+    case 6:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -554,14 +574,12 @@ extension PasswordQueryFilter
     });
   }
 
-  QueryBuilder<Password, Password, QAfterFilterCondition> passwordEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordCipherTextEqualTo(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.equalTo(
-          property: r'password',
+          property: r'passwordCipherText',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -569,7 +587,8 @@ extension PasswordQueryFilter
     });
   }
 
-  QueryBuilder<Password, Password, QAfterFilterCondition> passwordGreaterThan(
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordCipherTextGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -578,7 +597,7 @@ extension PasswordQueryFilter
       return query.addFilterCondition(
         FilterCondition.greaterThan(
           include: include,
-          property: r'password',
+          property: r'passwordCipherText',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -586,7 +605,8 @@ extension PasswordQueryFilter
     });
   }
 
-  QueryBuilder<Password, Password, QAfterFilterCondition> passwordLessThan(
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordCipherTextLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -595,7 +615,7 @@ extension PasswordQueryFilter
       return query.addFilterCondition(
         FilterCondition.lessThan(
           include: include,
-          property: r'password',
+          property: r'passwordCipherText',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -603,7 +623,8 @@ extension PasswordQueryFilter
     });
   }
 
-  QueryBuilder<Password, Password, QAfterFilterCondition> passwordBetween(
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordCipherTextBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -613,7 +634,7 @@ extension PasswordQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.between(
-          property: r'password',
+          property: r'passwordCipherText',
           lower: lower,
           includeLower: includeLower,
           upper: upper,
@@ -624,14 +645,12 @@ extension PasswordQueryFilter
     });
   }
 
-  QueryBuilder<Password, Password, QAfterFilterCondition> passwordStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordCipherTextStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.startsWith(
-          property: r'password',
+          property: r'passwordCipherText',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -639,14 +658,12 @@ extension PasswordQueryFilter
     });
   }
 
-  QueryBuilder<Password, Password, QAfterFilterCondition> passwordEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordCipherTextEndsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.endsWith(
-          property: r'password',
+          property: r'passwordCipherText',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -654,14 +671,12 @@ extension PasswordQueryFilter
     });
   }
 
-  QueryBuilder<Password, Password, QAfterFilterCondition> passwordContains(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordCipherTextContains(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.contains(
-          property: r'password',
+          property: r'passwordCipherText',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -669,14 +684,12 @@ extension PasswordQueryFilter
     });
   }
 
-  QueryBuilder<Password, Password, QAfterFilterCondition> passwordMatches(
-    String pattern, {
-    bool caseSensitive = true,
-  }) {
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordCipherTextMatches(String pattern, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
         FilterCondition.matches(
-          property: r'password',
+          property: r'passwordCipherText',
           wildcard: pattern,
           caseSensitive: caseSensitive,
         ),
@@ -684,18 +697,315 @@ extension PasswordQueryFilter
     });
   }
 
-  QueryBuilder<Password, Password, QAfterFilterCondition> passwordIsEmpty() {
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordCipherTextIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.equalTo(property: r'password', value: ''),
+        FilterCondition.equalTo(property: r'passwordCipherText', value: ''),
       );
     });
   }
 
-  QueryBuilder<Password, Password, QAfterFilterCondition> passwordIsNotEmpty() {
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordCipherTextIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        FilterCondition.greaterThan(property: r'password', value: ''),
+        FilterCondition.greaterThan(property: r'passwordCipherText', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordMacEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'passwordMac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordMacGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'passwordMac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordMacLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'passwordMac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordMacBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'passwordMac',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordMacStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'passwordMac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordMacEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'passwordMac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordMacContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'passwordMac',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordMacMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'passwordMac',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordMacIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'passwordMac', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordMacIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'passwordMac', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordNonceEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'passwordNonce',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordNonceGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'passwordNonce',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordNonceLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'passwordNonce',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordNonceBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'passwordNonce',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordNonceStartsWith(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'passwordNonce',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordNonceEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'passwordNonce',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordNonceContains(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'passwordNonce',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition> passwordNonceMatches(
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'passwordNonce',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordNonceIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'passwordNonce', value: ''),
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterFilterCondition>
+  passwordNonceIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'passwordNonce', value: ''),
       );
     });
   }
@@ -1024,15 +1334,40 @@ extension PasswordQuerySortBy on QueryBuilder<Password, Password, QSortBy> {
     });
   }
 
-  QueryBuilder<Password, Password, QAfterSortBy> sortByPassword() {
+  QueryBuilder<Password, Password, QAfterSortBy> sortByPasswordCipherText() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'password', Sort.asc);
+      return query.addSortBy(r'passwordCipherText', Sort.asc);
     });
   }
 
-  QueryBuilder<Password, Password, QAfterSortBy> sortByPasswordDesc() {
+  QueryBuilder<Password, Password, QAfterSortBy>
+  sortByPasswordCipherTextDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'password', Sort.desc);
+      return query.addSortBy(r'passwordCipherText', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterSortBy> sortByPasswordMac() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'passwordMac', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterSortBy> sortByPasswordMacDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'passwordMac', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterSortBy> sortByPasswordNonce() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'passwordNonce', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterSortBy> sortByPasswordNonceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'passwordNonce', Sort.desc);
     });
   }
 
@@ -1099,15 +1434,40 @@ extension PasswordQuerySortThenBy
     });
   }
 
-  QueryBuilder<Password, Password, QAfterSortBy> thenByPassword() {
+  QueryBuilder<Password, Password, QAfterSortBy> thenByPasswordCipherText() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'password', Sort.asc);
+      return query.addSortBy(r'passwordCipherText', Sort.asc);
     });
   }
 
-  QueryBuilder<Password, Password, QAfterSortBy> thenByPasswordDesc() {
+  QueryBuilder<Password, Password, QAfterSortBy>
+  thenByPasswordCipherTextDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'password', Sort.desc);
+      return query.addSortBy(r'passwordCipherText', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterSortBy> thenByPasswordMac() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'passwordMac', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterSortBy> thenByPasswordMacDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'passwordMac', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterSortBy> thenByPasswordNonce() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'passwordNonce', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Password, Password, QAfterSortBy> thenByPasswordNonceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'passwordNonce', Sort.desc);
     });
   }
 
@@ -1154,11 +1514,33 @@ extension PasswordQueryWhereDistinct
     });
   }
 
-  QueryBuilder<Password, Password, QDistinct> distinctByPassword({
+  QueryBuilder<Password, Password, QDistinct> distinctByPasswordCipherText({
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'password', caseSensitive: caseSensitive);
+      return query.addDistinctBy(
+        r'passwordCipherText',
+        caseSensitive: caseSensitive,
+      );
+    });
+  }
+
+  QueryBuilder<Password, Password, QDistinct> distinctByPasswordMac({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'passwordMac', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Password, Password, QDistinct> distinctByPasswordNonce({
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(
+        r'passwordNonce',
+        caseSensitive: caseSensitive,
+      );
     });
   }
 
@@ -1199,9 +1581,22 @@ extension PasswordQueryProperty
     });
   }
 
-  QueryBuilder<Password, String, QQueryOperations> passwordProperty() {
+  QueryBuilder<Password, String, QQueryOperations>
+  passwordCipherTextProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'password');
+      return query.addPropertyName(r'passwordCipherText');
+    });
+  }
+
+  QueryBuilder<Password, String, QQueryOperations> passwordMacProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'passwordMac');
+    });
+  }
+
+  QueryBuilder<Password, String, QQueryOperations> passwordNonceProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'passwordNonce');
     });
   }
 

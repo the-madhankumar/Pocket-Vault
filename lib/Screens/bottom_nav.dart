@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pocket_vault/Component/context/lock.dart';
 import 'package:pocket_vault/Screens/generator.dart';
 import 'package:pocket_vault/Screens/home.dart';
 import 'package:pocket_vault/Screens/settings.dart';
+import 'package:pocket_vault/Utils/app_colors.dart';
+import 'package:provider/provider.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
@@ -12,12 +15,9 @@ class BottomNav extends StatefulWidget {
 
 class _BottomNavState extends State<BottomNav> {
   int selectedIndex = 0;
+  bool get isDark => context.watch<Lock>().isDarked;
 
-  final List<Widget> screens = const [
-    Home(),
-    Generator(),
-    Settings()
-  ];
+  final List<Widget> screens = const [Home(), Generator(), Settings()];
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +34,12 @@ class _BottomNavState extends State<BottomNav> {
               child: Container(
                 height: 65,
                 decoration: BoxDecoration(
-                  color: const Color.fromARGB(90, 158, 158, 158),
+                  color: AppColors.background(isDark),
                   borderRadius: BorderRadius.circular(24),
+                  border: Border.all(
+                    color: AppColors.secondaryText(isDark),
+                    width: 1,
+                  ),
                   boxShadow: const [
                     BoxShadow(
                       blurRadius: 20,
@@ -58,8 +62,8 @@ class _BottomNavState extends State<BottomNav> {
                       });
                     },
 
-                    selectedItemColor: Colors.white,
-                    unselectedItemColor: Colors.white54,
+                    selectedItemColor: AppColors.text(isDark),
+                    unselectedItemColor: AppColors.secondaryText(isDark),
 
                     items: const [
                       BottomNavigationBarItem(

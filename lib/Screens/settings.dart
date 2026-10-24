@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:pocket_vault/Component/Settings/settingsCard.dart';
 import 'package:pocket_vault/Component/Settings/settingsTitle.dart';
 import 'package:pocket_vault/Component/Settings/showdialogtime.dart';
+import 'package:pocket_vault/Component/about.dart';
+import 'package:pocket_vault/Component/context/lock.dart';
 import 'package:pocket_vault/Component/heading.dart';
+import 'package:pocket_vault/Component/setMasterPassword.dart';
 import 'package:pocket_vault/Utils/app_colors.dart';
+import 'package:provider/provider.dart';
+import 'package:screen_protector/screen_protector.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum SettingsInputType { dialog, dropdown, boolean, none }
@@ -16,10 +21,12 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  bool get isDark => context.read<Lock>().isDarked;
+
   bool lockAtBackground = false;
   bool hidePasswords = true;
   bool screenshotProtection = true;
-  bool theme = true; // black;
+  bool theme = true;
 
   String autoLock = "N";
   String clipboardAutoClear = "N";
@@ -41,9 +48,30 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<void> setBoolValue(String key, bool value) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final prefs = await SharedPreferences.getInstance();
+
+    if (key == "Theme") {
+      await context.read<Lock>().toggleDark();
+      return;
+    }
 
     await prefs.setBool(key, value);
+
+    if (key == "screenshotProtection") {
+      if (value) {
+        await ScreenProtector.preventScreenshotOn();
+      } else {
+        await ScreenProtector.preventScreenshotOff();
+      }
+    }
+
+    if (key == "lockAtBackground") {
+      if (value) {
+        await ScreenProtector.protectDataLeakageOn();
+      } else {
+        await ScreenProtector.protectDataLeakageOff();
+      }
+    }
   }
 
   Future<void> setStringValue(String key, String value) async {
@@ -60,13 +88,15 @@ class _SettingsState extends State<Settings> {
 
   @override
   Widget build(BuildContext context) {
+    final lock = context.watch<Lock>();
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: AppColors.background(isDark),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(height: 24.0,),
-          heading(text: 'Settings'),
+          const SizedBox(height: 24.0),
+          heading(text: 'Settings', isDark: isDark),
 
           Expanded(
             child: ListView(
@@ -75,12 +105,22 @@ class _SettingsState extends State<Settings> {
                 const SizedBox(height: 20),
 
                 // Security
-                settingsGroupTitle('Security'),
+                settingsGroupTitle('Security', isDark: isDark),
 
                 settingsCard(
                   icon: Icons.lock_reset,
                   label: 'Change Master Password',
                   inputType: SettingsInputType.dialog,
+                  isDark: isDark,
+                  callBack: () => {
+                    showMasterPasswordDialog(
+                      context,
+                      isDark: isDark,
+                      textData:
+                          'Update your master password.\n'
+                          'Choose a new password to keep your vault secure.',
+                    ),
+                  },
                 ),
 
                 settingsCard(
@@ -88,6 +128,7 @@ class _SettingsState extends State<Settings> {
                   label: 'Auto Lock',
                   inputType: SettingsInputType.dropdown,
                   displayValue: autoLock.toString(),
+                  isDark: isDark,
                   callBack: () async {
                     final value = await showDialogTime(context: context);
 
@@ -95,9 +136,10 @@ class _SettingsState extends State<Settings> {
                       setState(() {
                         autoLock = value;
                       });
-                    }
 
-                    setStringValue("autoLock", value!);
+                      await lock.setAutoLockTime(value);
+                      lock.startTimer();
+                    }
                   },
                 ),
 
@@ -106,6 +148,7 @@ class _SettingsState extends State<Settings> {
                   label: 'Lock at Background',
                   inputType: SettingsInputType.boolean,
                   switchValue: lockAtBackground,
+                  isDark: isDark,
                   onSwitchChanged: (value) {
                     setState(() {
                       lockAtBackground = value;
@@ -120,6 +163,7 @@ class _SettingsState extends State<Settings> {
                   label: 'Hide Passwords by Default',
                   inputType: SettingsInputType.boolean,
                   switchValue: hidePasswords,
+                  isDark: isDark,
                   onSwitchChanged: (value) {
                     setState(() {
                       hidePasswords = value;
@@ -134,6 +178,7 @@ class _SettingsState extends State<Settings> {
                   label: 'Clipboard Auto-Clear',
                   inputType: SettingsInputType.dropdown,
                   displayValue: clipboardAutoClear.toString(),
+                  isDark: isDark,
                   callBack: () async {
                     final value = await showDialogTime(context: context);
 
@@ -152,6 +197,7 @@ class _SettingsState extends State<Settings> {
                   label: 'Screenshot & Screen Recording Protection',
                   inputType: SettingsInputType.boolean,
                   switchValue: screenshotProtection,
+                  isDark: isDark,
                   onSwitchChanged: (value) {
                     setState(() {
                       screenshotProtection = value;
@@ -161,16 +207,17 @@ class _SettingsState extends State<Settings> {
                   },
                 ),
 
-                const _SettingsDivider(),
+                _SettingsDivider(isDark: isDark),
 
                 // Appearance
-                settingsGroupTitle('Appearance'),
+                settingsGroupTitle('Appearance', isDark: isDark),
 
                 settingsCard(
                   icon: Icons.color_lens_outlined,
                   label: 'Theme',
                   inputType: SettingsInputType.boolean,
                   switchValue: theme,
+                  isDark: isDark,
                   onSwitchChanged: (value) {
                     setState(() {
                       theme = value;
@@ -180,15 +227,22 @@ class _SettingsState extends State<Settings> {
                   },
                 ),
 
-                const _SettingsDivider(),
+                _SettingsDivider(isDark: isDark),
 
                 // About
-                settingsGroupTitle('About'),
+                settingsGroupTitle('About', isDark: isDark),
 
                 settingsCard(
                   icon: Icons.info_outline,
                   label: 'About Pocket Vault',
                   inputType: SettingsInputType.none,
+                  isDark: isDark,
+                  callBack: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const About()),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 100),
@@ -202,15 +256,17 @@ class _SettingsState extends State<Settings> {
 }
 
 class _SettingsDivider extends StatelessWidget {
-  const _SettingsDivider();
+  const _SettingsDivider({required this.isDark});
+
+  final bool isDark;
 
   @override
   Widget build(BuildContext context) {
-    return const Divider(
+    return Divider(
       height: 30,
       indent: 30,
       endIndent: 30,
-      color: Colors.white12,
+      color: AppColors.secondaryText(isDark),
       thickness: 0.5,
     );
   }

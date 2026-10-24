@@ -1,34 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:pocket_vault/Database/Password/password.model.dart';
-import 'package:pocket_vault/Screens/Edit.dart';
+import 'package:pocket_vault/Component/context/lock.dart';
+import 'package:pocket_vault/Database/Adaptor/passwordAdaptorModel.dart';
 import 'package:pocket_vault/Screens/View.dart';
+import 'package:pocket_vault/Utils/app_colors.dart';
+import 'package:provider/provider.dart';
 
 Widget passwordCard({
   required BuildContext context,
-  required Password item,
-  required Future<void> Function(Password) deletePass,
+  required PasswordView item,
+  required Future<void> Function(PasswordView) deletePass,
+  required Future<void> Function(PasswordView) updatePass,
 }) {
+  final isDark = context.read<Lock>().isDarked;
   return Container(
     margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
     padding: const EdgeInsets.all(12),
     decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
     child: InkWell(
       borderRadius: BorderRadius.circular(16),
-      onTap: () => view(context, data: item, deletePass: deletePass),
+      onTap: () => view(
+        context,
+        data: item,
+        deletePass: deletePass,
+        updatePass: updatePass,
+      ),
       child: Row(
         children: [
           Container(
             width: 55,
             height: 55,
-            decoration: const BoxDecoration(
-              color: Colors.blueGrey,
+            decoration: BoxDecoration(
+              color: AppColors.secondaryText(isDark),
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
             child: Text(
               item.platform.isNotEmpty ? item.platform[0].toUpperCase() : '?',
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: AppColors.text(isDark),
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
@@ -49,9 +58,9 @@ Widget passwordCard({
                         item.platform,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white,
+                          color: AppColors.secondaryText(isDark),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -62,8 +71,8 @@ Widget passwordCard({
                         item.email,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          color: Colors.grey,
+                        style: TextStyle(
+                          color: AppColors.text(isDark),
                           fontSize: 14,
                         ),
                       ),

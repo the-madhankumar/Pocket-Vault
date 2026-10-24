@@ -1,11 +1,12 @@
 import 'dart:convert';
+import 'package:cryptography/cryptography.dart';
 import 'package:flutter/services.dart';
 
 class PasswordModel {
   final String platform;
   final String userId;
   final String mail;
-  final String password;
+  final SecretBox password;
   final String link;
 
   PasswordModel({
